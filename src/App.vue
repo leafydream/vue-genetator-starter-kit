@@ -1,8 +1,9 @@
 <template lang="html">
     <div id="app">
         <h1 class="title">title</h1>
-         <router-link to="/home">home</router-link>
+         <router-link to="/">home</router-link>
          <router-link to="/about">about</router-link>
+
         <router-view />
     </div>
 </template>
@@ -20,7 +21,6 @@
 <style lang="scss">
     @import "./assets/css/rest.scss";
     #app {
-        background: red;
         .title {
             font-size: 80px;
             height: 100px;

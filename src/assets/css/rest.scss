@@ -8,3 +8,11 @@ html {
   font-family: '微软雅黑';
 }
 
+.list {
+  display: flex;
+  li {
+    background: aqua;
+    border-radius: 5px;
+  }
+}
+

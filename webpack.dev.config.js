@@ -10,10 +10,10 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
+        filename: '[name].bundle.js',
     },
     module: {
-        rules: [          
+        rules: [
             {
                 test: /\.html$/,
                 use: [
@@ -29,6 +29,7 @@ module.exports = {
                     {
                         loader: 'vue-loader',
                         options: {
+                            postcss: [require('postcss-cssnext')()],
                             loaders: {
                               css: 'vue-style-loader!css-loader!px2rem-loader?remUnit=75&remPrecision=8',
                               scss: 'vue-style-loader!css-loader!px2rem-loader?remUnit=75&remPrecision=8!sass-loader',
@@ -58,6 +59,16 @@ module.exports = {
                         options: {
                             sourceMap: true
                         }
+                    },
+                    {
+                      loader: 'postcss-loader',
+                      options: {
+                        plugins: [
+                          require('autoprefixer')({
+                            browsers: ['last 5 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8']
+                          })
+                        ]
+                      }
                     }
                 ]
             },
@@ -81,6 +92,16 @@ module.exports = {
                         options: {
                             sourceMap: true
                         }
+                    },
+                    {
+                      loader: 'postcss-loader',
+                      options: {
+                        plugins: [
+                          require('autoprefixer')({
+                            browsers: ['last 5 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8']
+                          })
+                        ]
+                      }
                     }
                 ]
             }
@@ -94,7 +115,6 @@ module.exports = {
         hot: true,
         inline:true,
         port: 9000,
-        
         open: true,
         overlay: {
             warnings: true,
@@ -122,5 +142,5 @@ module.exports = {
                 'NODE_ENV': JSON.stringify('development')
             }
         })
-    ]    
+    ]
 };

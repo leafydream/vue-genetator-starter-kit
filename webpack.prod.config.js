@@ -8,7 +8,7 @@ const pkg = require('./package.json');
 
 module.exports = {
     entry: {
-        main: './src/main',
+        main: './src/main.js',
         // vendor: ['vue', 'vue-router', 'vuex', 'axios']
         vendor: Object.keys(pkg.dependencies)
     },
@@ -21,7 +21,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                
+
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
@@ -42,6 +42,7 @@ module.exports = {
                     {
                         loader: 'vue-loader',
                         options: {
+                            postcss: [require('postcss-cssnext')()],
                             loaders: {
                                 css: ExtractTextPlugin.extract({
                                     use: 'css-loader!px2rem-loader?remUnit=75&remPrecision=8',
@@ -54,7 +55,7 @@ module.exports = {
                                 less: ExtractTextPlugin.extract({
                                     use: 'css-loader!px2rem-loader?remUnit=75&remPrecision=8!less-loader',
                                     fallback: 'vue-style-loader'
-                                }),
+                                })
                             }
                         }
                     }
@@ -80,6 +81,16 @@ module.exports = {
                         options: {
                             sourceMap: true
                         }
+                    },
+                    {
+                      loader: 'postcss-loader',
+                      options: {
+                        plugins: [
+                          require('autoprefixer')({
+                            browsers: ['last 5 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8']
+                          })
+                        ]
+                      }
                     }
                 ]
             },
@@ -103,6 +114,16 @@ module.exports = {
                         options: {
                             sourceMap: true
                         }
+                    },
+                    {
+                      loader: 'postcss-loader',
+                      options: {
+                        plugins: [
+                          require('autoprefixer')({
+                            browsers: ['last 5 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8']
+                          })
+                        ]
+                      }
                     }
                 ]
             },
@@ -142,25 +163,25 @@ module.exports = {
         }
     },
     plugins: [
-        new BundleAnalyzerPlugin(),
-        new CleanWebpackPlugin(['dist']),
+        // new BundleAnalyzerPlugin(),
         new webpack.NamedChunksPlugin(),
-        // new webpack.optimize.UglifyJsPlugin({
-        //     compress: {
-        //         warnings: false,
-        //         drop_debugger: true,
-        //         drop_console: true
-        //     },
-        //     sourceMap: false,
-        //     comments: false
-        // }),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false,
+                drop_debugger: true,
+                drop_console: true
+            },
+            sourceMap: false,
+            comments: false
+        }),
         new ExtractTextPlugin({
-            filename: 'css/[name].[chunkhash:8].css'
+            filename: 'css/[name].[chunkhash:8].css',
+            allChunks: true
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/template/index.html',
-            title: 'React Router Redux Rxjs Generator',
+            title: 'vue generator starter kit',
             chunks: ['main', 'vendor', 'manifest'],
             minify: {
                 removeComments: true,
