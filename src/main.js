@@ -2,9 +2,11 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import store from './store';
-import './util/viewport.js';
 
 Vue.config.productionTip = false;
+
+import '@/util/viewport.js';
+import '@/assets/css/rest.scss';
 
 new Vue({
     router,

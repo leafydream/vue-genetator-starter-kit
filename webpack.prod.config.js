@@ -3,38 +3,36 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const pkg = require('./package.json');
+const config = require('./config');
 
 module.exports = {
     entry: {
-        main: './src/main.js',
-        // vendor: ['vue', 'vue-router', 'vuex', 'axios']
+        main: './src/main',
         vendor: Object.keys(pkg.dependencies)
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'js/[name].[chunkhash:8].js',
         chunkFilename: 'js/[name].[chunkhash:8].js',
+        publicPath: config.publicPath
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                },
-            },
-            {
-                test: /\.html$/,
                 use: [
                     {
-                        loader: 'html-loader',
+                        loader: 'babel-loader',
+                        options: {
+                            cacheDirectory: true
+                        }
                     }
                 ],
-                exclude: /node_modules/,
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
                 test: /\.vue$/,
@@ -45,24 +43,26 @@ module.exports = {
                             postcss: [require('postcss-cssnext')()],
                             loaders: {
                                 css: ExtractTextPlugin.extract({
-                                    use: 'css-loader!px2rem-loader?remUnit=75&remPrecision=8',
+                                    use: 'css-loader?minimize!px2rem-loader?remUnit=75&remPrecision=8',
                                     fallback: 'vue-style-loader'
                                 }),
                                 scss: ExtractTextPlugin.extract({
-                                    use: 'css-loader!px2rem-loader?remUnit=75&remPrecision=8!sass-loader',
+                                    use: 'css-loader?minimize!px2rem-loader?remUnit=75&remPrecision=8!sass-loader',
                                     fallback: 'vue-style-loader'
                                 }),
                                 less: ExtractTextPlugin.extract({
-                                    use: 'css-loader!px2rem-loader?remUnit=75&remPrecision=8!less-loader',
+                                    use: 'css-loader?minimize!px2rem-loader?remUnit=75&remPrecision=8!less-loader',
                                     fallback: 'vue-style-loader'
                                 })
                             }
                         }
                     }
                 ],
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
-                test: '/\.scss$/',
+                test: /\.css$/,
                 use: [
                     {
                         loader: 'style-loader',
@@ -77,7 +77,36 @@ module.exports = {
                         }
                     },
                     {
-                        loader: 'scss-loader',
+                      loader: 'postcss-loader',
+                      options: {
+                        plugins: [
+                          require('autoprefixer')({
+                            browsers: ['last 5 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8']
+                          })
+                        ]
+                      }
+                    }
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: 'style-loader',
+                        options: {
+                            sourceMap: true
+                        }
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: true
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
                         options: {
                             sourceMap: true
                         }
@@ -92,10 +121,12 @@ module.exports = {
                         ]
                       }
                     }
-                ]
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
-                test: '/\.less$/',
+                test: /\.less$/,
                 use: [
                     {
                         loader: 'style-loader',
@@ -125,57 +156,96 @@ module.exports = {
                         ]
                       }
                     }
-                ]
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
-                test: '/\.json$/',
+                test: /\.json$/,
                 use: [
                     {
                         loader: 'json-loader'
                     }
-                ]
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
                 test: /\.(ico|jpg|jpeg|png|gif)(\?.*)?$/,
-                loader: 'file-loader',
-                options: {
-                    name: 'images/[name].[hash:5].[ext]'
-                },
-                // include: config.srcPath,
-                exclude: /node_modules/
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            name: 'images/[name].[hash:8].[ext]',
+                            limit: 10000,
+                        },
+                    },
+                    {
+                        loader: 'image-webpack-loader',
+                        options: {
+                            mozjpeg: {
+                            progressive: true,
+                                quality: 65
+                            },
+                            optipng: {
+                                enabled: false,
+                            },
+                            pngquant: {
+                                quality: '65-90',
+                                speed: 4
+                            },
+                            gifsicle: {
+                                interlaced: false,
+                            },
+                            webp: {
+                                quality: 75
+                            }
+                        }
+                    }
+                ],      
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
                 test: /\.(eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
                 loader: 'url-loader',
                 options: {
-                    name: 'fonts/[name].[hash:5].[ext]',
+                    name: 'fonts/[name].[hash:8].[ext]',
                     limit: 10000,
                 },
-                exclude: /node_modules/
+                include: config.srcPath,
+                exclude: config.libPath
             }
         ]
     },
     resolve: {
-        extensions: ['.js', '.vue', '.less', '.scss', '.json'],
+        extensions: ['.js', '.vue', '.less', '.scss', '.css', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             '@': path.resolve(__dirname, 'src')
-        }
+        },
+        mainFields: ['main']
     },
     plugins: [
         // new BundleAnalyzerPlugin(),
         new webpack.NamedChunksPlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false,
-                drop_debugger: true,
-                drop_console: true
-            },
-            sourceMap: false,
-            comments: false
+        new ParallelUglifyPlugin({
+            uglifyJS: {
+                output: {
+                    comments: false,
+                    beautify: false
+                },
+                compress: {
+                    warnings: false,
+                    drop_debugger: true,
+                    drop_console: true,
+                    collapse_vars: true,
+                    reduce_vars: true
+                }
+            }
         }),
         new ExtractTextPlugin({
-            filename: 'css/[name].[chunkhash:8].css',
+            filename: 'css/[name].min.[chunkhash:8].css',
             allChunks: true
         }),
         new HtmlWebpackPlugin({
@@ -199,7 +269,7 @@ module.exports = {
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
-            name: ['vendor', 'manifest'],
+            names: ['vendor', 'manifest'],
             filename: 'js/[name].[chunkhash:8].js',
             minChunks: Infinity
         }),

@@ -1,5 +1,5 @@
 <template lang="html">
-    <div>
+    <div class="container">
         <p> {{ counter }}</p>
         <div>
             <button @click="incrementCount">increment</button>
@@ -13,15 +13,7 @@
                 <img :src="item.avatar_url" alt="">
             </li>
         </ul>
-
-        <ul class="list">
-          <li>1</li>
-          <li>2</li>
-          <li>3</li>
-          <li>4</li>
-          <li>5</li>
-        </ul>
-        <br>
+        <img src="../../assets/images/logo.png" alt="">  
     </div>
 </template>
 <script>
@@ -29,7 +21,7 @@
     export default {
         data() {
             return {
-
+                
             }
         },
         computed: {
@@ -50,6 +42,16 @@
         },
     }
 </script>
+
+<style>
+    
+    .container {
+        font-size: 50px;
+        display: flex;
+        border-radius: 5px;
+    }
+</style>
+
 
 
 

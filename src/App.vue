@@ -1,15 +1,14 @@
-<template lang="html">
+<template>
     <div id="app">
         <h1 class="title">title</h1>
-         <router-link to="/">home</router-link>
-         <router-link to="/about">about</router-link>
-
+        <router-link to="/">home</router-link>
+        <router-link to="/about">about</router-link>
         <router-view />
     </div>
 </template>
 
 <script>
-    import Home from './views/home';
+    import Home from '@/views/home';
 
     export default {
         components: {
@@ -19,7 +18,7 @@
 </script>
 
 <style lang="scss">
-    @import "./assets/css/rest.scss";
+    
     #app {
         .title {
             font-size: 80px;

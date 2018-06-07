@@ -15,14 +15,10 @@ module.exports = {
         'plugin:eslint-plugin/recommended',
         'plugin:vue-libs/recommended'
     ],
-    plugins: [
-        'eslint-plugin'
-    ],
     rules: {
         'eslint-plugin/report-message-format': ['error', '^[A-Z`\'].*\\.$'],
         'eslint-plugin/prefer-placeholders': 'error',
         'eslint-plugin/consistent-output': 'error',
-
         "quotes": [2, "single"],
         "strict": [2, "never"],
         "babel/generator-star-spacing": 1,

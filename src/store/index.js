@@ -11,9 +11,5 @@ export default new Store({
     modules: {
         Counter
     },
-    plugins: debug ? [
-        require('vuex/dist/logger')({
-            collapsed: false
-          })
-    ] : []
-});
+    plugins: debug ? [require('vuex/dist/logger')({ collapsed: false })] : []
+})

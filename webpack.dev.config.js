@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const config = require('./config');
 
 module.exports = {
     devtool: 'cheap-module-source-map',
@@ -15,13 +16,12 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.html$/,
-                use: [
-                    {
-                        loader: 'html-loader',
-                    }
-                ],
-                exclude: /node_modules/,
+                test: /\.js$/,
+                use: {
+                    loader: 'babel-loader',
+                },
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
                 test: /\.vue$/,
@@ -38,9 +38,11 @@ module.exports = {
                         }
                     }
                 ],
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
-                test: '/\.scss$/',
+                test: /\.css$/,
                 use: [
                     {
                         loader: 'style-loader',
@@ -55,7 +57,36 @@ module.exports = {
                         }
                     },
                     {
-                        loader: 'scss-loader',
+                      loader: 'postcss-loader',
+                      options: {
+                        plugins: [
+                          require('autoprefixer')({
+                            browsers: ['last 5 Chrome versions', 'last 5 Firefox versions', 'Safari >= 6', 'ie > 8']
+                          })
+                        ]
+                      }
+                    }
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: 'style-loader',
+                        options: {
+                            sourceMap: true
+                        }
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            sourceMap: true
+                        }
+                    },
+                    {
+                        loader: 'sass-loader',
                         options: {
                             sourceMap: true
                         }
@@ -70,10 +101,12 @@ module.exports = {
                         ]
                       }
                     }
-                ]
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
             },
             {
-                test: '/\.less$/',
+                test: /\.less$/,
                 use: [
                     {
                         loader: 'style-loader',
@@ -103,7 +136,39 @@ module.exports = {
                         ]
                       }
                     }
-                ]
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
+            },
+            {
+                test: /\.json$/,
+                use: [
+                    {
+                        loader: 'json-loader'
+                    }
+                ],
+                include: config.srcPath,
+                exclude: config.libPath
+            },
+            {
+                test: /\.(ico|jpg|jpeg|png|gif)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    name: 'images/[name].[hash:8].[ext]',
+                    limit: 10000
+                },
+                include: config.srcPath,
+                exclude: config.libPath
+            },
+            {
+                test: /\.(eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    name: 'fonts/[name].[hash:8].[ext]',
+                    limit: 10000
+                },
+                include: config.srcPath,
+                exclude: config.libPath
             }
         ]
     },
@@ -114,8 +179,8 @@ module.exports = {
         progress: true,
         hot: true,
         inline:true,
-        port: 9000,
-        open: true,
+        port: config.port,
+        open: true,  
         overlay: {
             warnings: true,
             errors: true
@@ -125,7 +190,8 @@ module.exports = {
         extensions: ['.js', '.vue', '.less', '.scss', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            '@': path.resolve(__dirname, 'src')
+            '@': path.resolve(__dirname, 'src'),
+            'viewport': path.resolve(__dirname, 'src/util/viewport.js')
         }
     },
     plugins: [
@@ -137,10 +203,8 @@ module.exports = {
             title: 'vue generator starter kit',
         }),
         new webpack.NamedModulesPlugin(),
-        new webpack.DefinePlugin({
-            'process.env': {
-                'NODE_ENV': JSON.stringify('development')
-            }
+        new webpack.ProvidePlugin({
+            v: 'viewport'
         })
     ]
 };
