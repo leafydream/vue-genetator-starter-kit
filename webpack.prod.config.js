@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -212,6 +211,16 @@ module.exports = {
                 options: {
                     name: 'fonts/[name].[hash:8].[ext]',
                     limit: 10000,
+                },
+                include: config.srcPath,
+                exclude: config.libPath
+            },
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                  limit: 10000,
+                  name: 'media/[name].[hash:8].[ext]'
                 },
                 include: config.srcPath,
                 exclude: config.libPath

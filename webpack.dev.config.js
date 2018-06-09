@@ -169,6 +169,16 @@ module.exports = {
                 },
                 include: config.srcPath,
                 exclude: config.libPath
+            },
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                  limit: 10000,
+                  name: 'media/[name].[hash:8].[ext]'
+                },
+                include: config.srcPath,
+                exclude: config.libPath
             }
         ]
     },
@@ -190,8 +200,7 @@ module.exports = {
         extensions: ['.js', '.vue', '.less', '.scss', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            '@': path.resolve(__dirname, 'src'),
-            'viewport': path.resolve(__dirname, 'src/util/viewport.js')
+            '@': path.resolve(__dirname, 'src')
         }
     },
     plugins: [
@@ -202,9 +211,6 @@ module.exports = {
             filename: 'index.html',
             title: 'vue generator starter kit',
         }),
-        new webpack.NamedModulesPlugin(),
-        new webpack.ProvidePlugin({
-            v: 'viewport'
-        })
+        new webpack.NamedModulesPlugin()
     ]
 };
