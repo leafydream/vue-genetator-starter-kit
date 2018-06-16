@@ -2,15 +2,19 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const config = require('./config');
+const config = require('../config');
+
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 module.exports = {
     devtool: 'cheap-module-source-map',
     entry: {
-        main: './src/main'
+        main: resolve('src/main')
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: config.srcPath,
         filename: '[name].bundle.js',
     },
     module: {
@@ -184,13 +188,13 @@ module.exports = {
     },
     devServer: {
         historyApiFallback: true,
-        contentBase: path.join(__dirname, "dist"),
+        contentBase: config.buildPath,
         compress: true,
         progress: true,
         hot: true,
-        inline:true,
+        inline: true,
         port: config.port,
-        open: true,  
+        open: true,
         overlay: {
             warnings: true,
             errors: true
@@ -200,14 +204,14 @@ module.exports = {
         extensions: ['.js', '.vue', '.less', '.scss', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            '@': path.resolve(__dirname, 'src')
+            '@': config.srcPath
         }
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
-            template: './src/template/index.html',
+            template: resolve('src/template/index.html'),
             filename: 'index.html',
             title: 'vue generator starter kit',
         }),

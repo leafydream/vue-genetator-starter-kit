@@ -18,7 +18,7 @@
 </script>
 
 <style lang="scss">
-    
+
     #app {
         .title {
             font-size: 80px;

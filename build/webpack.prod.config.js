@@ -4,16 +4,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const pkg = require('./package.json');
-const config = require('./config');
+const pkg = require('../package.json');
+const config = require('../config');
+
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 module.exports = {
     entry: {
-        main: './src/main',
+        main: resolve('src/main'),
         vendor: Object.keys(pkg.dependencies)
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: config.buildPath,
         filename: 'js/[name].[chunkhash:8].js',
         chunkFilename: 'js/[name].[chunkhash:8].js',
         publicPath: config.publicPath
@@ -201,7 +205,7 @@ module.exports = {
                             }
                         }
                     }
-                ],      
+                ],
                 include: config.srcPath,
                 exclude: config.libPath
             },
@@ -231,7 +235,7 @@ module.exports = {
         extensions: ['.js', '.vue', '.less', '.scss', '.css', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            '@': path.resolve(__dirname, 'src')
+            '@': config.srcPath
         },
         mainFields: ['main']
     },
@@ -259,7 +263,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './src/template/index.html',
+            template: resolve('src/template/index.html'),
             title: 'vue generator starter kit',
             chunks: ['main', 'vendor', 'manifest'],
             minify: {
